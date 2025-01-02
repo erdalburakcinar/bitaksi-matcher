@@ -1,0 +1,8 @@
+server:
+  port: ":8081"
+
+driver_service_client:
+  url: "http://driver-service:8080"
+  api_key: "8f05c3a1-9de0-4f26-b54f-7400133c92c7"
+
+jwt_secret_key: "secret-token-api-key"

@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  matcher-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - DRIVER_SERVICE_URL=http://driver-service:8080
+    depends_on:
+      - driver-service
+    networks:
+      - shared-net
+
+  driver-service:
+    build:
+      context: ../bitaksi-go-driver
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - shared-net
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    networks:
+      - shared-net
+
+networks:
+  shared-net:
+    external: true
+    name: my-shared-network
