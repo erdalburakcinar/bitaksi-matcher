@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"bitaksi-go-matcher/internal/models"
@@ -36,7 +35,7 @@ func (s *matcherService) FindNearestDriver(ctx context.Context, latitude, longit
 
 	driver, err := s.driverClient.SearchDriver(latitude, longitude, radius)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find nearest driver: %w", err)
+		return nil, err
 	}
 	return driver, nil
 }

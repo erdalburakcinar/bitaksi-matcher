@@ -52,7 +52,7 @@ func TestSearchDriver(t *testing.T) {
 				w.WriteHeader(http.StatusNotFound)
 			},
 			wantErr:         true,
-			wantErrContains: "no driver found",
+			wantErrContains: "no driver found in the search radius",
 			statusCode:      http.StatusNotFound,
 		},
 		{

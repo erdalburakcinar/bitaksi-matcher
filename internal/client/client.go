@@ -13,6 +13,8 @@ import (
 	"github.com/eapache/go-resiliency/breaker"
 )
 
+var ErrDriverNotFound = errors.New("no driver found in the search radius")
+
 // DriverAPIClient handles communication with the Driver Service.
 type DriverAPIClient struct {
 	BaseURL string
@@ -59,7 +61,7 @@ func (api *DriverAPIClient) SearchDriver(latitude, longitude float64, radius int
 
 		// Handle status codes
 		if resp.StatusCode == http.StatusNotFound {
-			return errors.New("no driver found")
+			return ErrDriverNotFound
 		}
 		if resp.StatusCode != http.StatusOK {
 			return fmt.Errorf("driver service error: received status %s", resp.Status)

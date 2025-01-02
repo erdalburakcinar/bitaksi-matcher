@@ -57,7 +57,7 @@ func TestMatcherService_FindNearestDriver(t *testing.T) {
 			longitude:     29.0,
 			radius:        1000,
 			wantErr:       true,
-			wantErrSubstr: "failed to find nearest driver: no driver available",
+			wantErrSubstr: "no driver available",
 			wantDriver:    nil,
 		},
 		{
@@ -69,7 +69,7 @@ func TestMatcherService_FindNearestDriver(t *testing.T) {
 			longitude:     28.0,
 			radius:        200,
 			wantErr:       true,
-			wantErrSubstr: "failed to find nearest driver: service unreachable",
+			wantErrSubstr: "service unreachable",
 			wantDriver:    nil,
 		},
 	}
@@ -111,6 +111,6 @@ func containsSubstring(s, substr string) bool {
 }
 
 func contains(s, substr string) bool {
-	return (len(s) > 0 && len(substr) > 0 && (s == substr ||
-		(len(s) > len(substr) && (s[0:len(substr)] == substr || contains(s[1:], substr)))))
+	return len(s) > 0 && len(substr) > 0 && (s == substr ||
+		(len(s) > len(substr) && (s[0:len(substr)] == substr || contains(s[1:], substr))))
 }

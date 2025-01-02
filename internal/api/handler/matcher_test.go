@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bitaksi-go-matcher/internal/client"
 	"bitaksi-go-matcher/internal/models"
 	"context"
 	"errors"
@@ -128,7 +129,7 @@ func TestMatcherHandler_MatchDriver(t *testing.T) {
 				"radius":    "100",
 			},
 			mockServiceFunc: func(ctx context.Context, lat, long float64, radius int) (*models.DriverWithDistance, error) {
-				return nil, errors.New("driver not found")
+				return nil, client.ErrDriverNotFound
 			},
 			wantStatus:   http.StatusNotFound,
 			wantContains: "Driver not found",
@@ -143,8 +144,8 @@ func TestMatcherHandler_MatchDriver(t *testing.T) {
 			mockServiceFunc: func(ctx context.Context, lat, long float64, radius int) (*models.DriverWithDistance, error) {
 				return nil, errors.New("some internal error")
 			},
-			wantStatus:   http.StatusNotFound,
-			wantContains: "Driver not found",
+			wantStatus:   http.StatusInternalServerError,
+			wantContains: "Internal server error",
 		},
 	}
 

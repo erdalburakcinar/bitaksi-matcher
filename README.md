@@ -9,7 +9,7 @@ Features
 •	JWT Middleware: Protected endpoints require JWT-based authentication.
 
 Requirements
-•	Go 1.19+ (or compatible)
+•	Go 1.23
 •	Docker
 •	Docker Compose
 

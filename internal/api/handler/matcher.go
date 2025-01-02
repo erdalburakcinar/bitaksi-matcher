@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"bitaksi-go-matcher/internal/client"
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -59,7 +61,15 @@ func (h *MatcherHandler) MatchDriver(w http.ResponseWriter, r *http.Request) {
 	driver, err := h.matcherService.FindNearestDriver(r.Context(), latitude, longitude, radius)
 	if err != nil {
 		log.Printf("FindNearestDriver error: %v\n", err)
-		respondWithError(w, http.StatusNotFound, "Driver not found")
+
+		if errors.Is(err, client.ErrDriverNotFound) {
+			respondWithError(w, http.StatusNotFound, "Driver not found in the search radius")
+
+			return
+		}
+
+		respondWithError(w, http.StatusInternalServerError, "Internal server error")
+
 		return
 	}
 
