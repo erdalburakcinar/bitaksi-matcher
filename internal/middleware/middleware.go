@@ -37,14 +37,21 @@ func (m *JWTMiddleware) ValidateJWT(next http.Handler) http.Handler {
 		})
 
 		fmt.Println("token: ", token)
+		fmt.Println("secretKey: ", m.SecretKey)
 		if err != nil || !token.Valid {
 			http.Error(w, `{"error": "Invalid token"}`, http.StatusUnauthorized)
 			return
 		}
 
-		_, ok := token.Claims.(jwt.MapClaims)
+		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
 			http.Error(w, `{"error": "Invalid claims"}`, http.StatusUnauthorized)
+			return
+		}
+
+		authenticated, ok := claims["authenticated"].(bool)
+		if !ok || !authenticated {
+			http.Error(w, `{"error": "Unauthorized"}`, http.StatusUnauthorized)
 			return
 		}
 
