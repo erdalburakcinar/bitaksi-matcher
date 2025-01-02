@@ -1,24 +1,25 @@
-.PHONY: build run test docker-build docker-run clean
+.PHONY: build run test docker-build docker-run docker-compose-up clean
 
-# Application settings
+# Service settings
 BINARY_NAME=matcher-service
 MAIN=cmd/main.go
 
 # Docker settings
 DOCKER_IMAGE=matcher-service
 DOCKER_TAG=latest
+DOCKER_COMPOSE_FILE=docker-compose.yml
 
 # Default port
 PORT=8081
 
-# Build the Go application
+# Build the application binary
 build:
 	@echo "Building application..."
 	go build -o $(BINARY_NAME) $(MAIN)
 
 # Run the application locally
 run: build
-	@echo "Running application..."
+	@echo "Running application locally..."
 	./$(BINARY_NAME)
 
 # Run tests
@@ -32,11 +33,21 @@ docker-build:
 	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
 
 # Run the Docker container
-docker-run:
+docker-run: docker-build
 	@echo "Running Docker container..."
-	docker run --rm -d -p $(PORT):$(PORT) --name $(BINARY_NAME) $(DOCKER_IMAGE):$(DOCKER_TAG)
+	docker run --rm -p $(PORT):$(PORT) --name $(BINARY_NAME) $(DOCKER_IMAGE):$(DOCKER_TAG)
 
-# Clean up the build and Docker artifacts
+# Start all services with Docker Compose
+docker-compose-up:
+	@echo "Starting services with Docker Compose..."
+	docker compose -f $(DOCKER_COMPOSE_FILE) up --build
+
+# Stop all services with Docker Compose
+docker-compose-down:
+	@echo "Stopping services with Docker Compose..."
+	docker compose -f $(DOCKER_COMPOSE_FILE) down
+
+# Clean up binaries and Docker images
 clean:
 	@echo "Cleaning up..."
 	rm -f $(BINARY_NAME)

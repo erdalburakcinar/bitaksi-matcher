@@ -1,27 +1,34 @@
 package api
 
 import (
-	"bitaksi-go-matcher/internal/api/handler"
-	"bitaksi-go-matcher/internal/middleware"
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"bitaksi-go-matcher/internal/config"
+	"bitaksi-go-matcher/internal/middleware"
+
+	"github.com/gorilla/mux"
 )
 
-func SetupRouter(matcherHandler handler.MatcherHandler, jwtMiddleware *middleware.JWTMiddleware) *mux.Router {
+type MatcherHandler interface {
+	MatchDriver(w http.ResponseWriter, r *http.Request)
+}
+
+// SetupRouter initializes and configures all HTTP routes for the Matcher Service.
+func SetupRouter(matcherHandler MatcherHandler, cfg *config.Config) *mux.Router {
 	router := mux.NewRouter()
 
 	// Public routes (e.g., health check)
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": "ok"}`))
-	})
+		_, _ = w.Write([]byte(`{"status": "ok"}`))
+	}).Methods(http.MethodGet)
 
-	// Protected routes
+	// Protected routes (require JWT authentication)
 	matcherRouter := router.PathPrefix("/matcher/api/v1").Subrouter()
-	matcherRouter.Use(jwtMiddleware.ValidateJWT)
+	matcherRouter.Use(middleware.ValidateJWT(cfg.JWTSecretKey))
 
-	// Register endpoints
-	matcherRouter.HandleFunc("/search", matcherHandler.MatchDriver).Methods("GET")
+	// Register matcher endpoints
+	matcherRouter.HandleFunc("/search", matcherHandler.MatchDriver).Methods(http.MethodGet)
 
 	return router
 }
